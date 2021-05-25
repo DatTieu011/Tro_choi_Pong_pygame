@@ -151,8 +151,8 @@ pygame.display.set_caption('Pong')
 bg_color = pygame.Color('#2F373F')
 accent_color = (27,35,43)
 basic_font = pygame.font.Font('freesansbold.ttf', 32)
-plob_sound = pygame.mixer.Sound("pong.ogg")
-score_sound = pygame.mixer.Sound("score.ogg")
+plob_sound = pygame.mixer.Sound("collide.ogg")
+score_sound = pygame.mixer.Sound("win.ogg")
 middle_strip = pygame.Rect(screen_width/2 - 2,0,4,screen_height)
 
 # Game objects
@@ -162,7 +162,7 @@ thanh_group = pygame.sprite.Group()
 thanh_group.add(ngchoi)
 thanh_group.add(doithu)
 
-banh = Banh('Ball.jpg',screen_width/2,screen_height/2,4,4,thanh_group)
+banh = Banh('Ball.png',screen_width/2,screen_height/2,4,4,thanh_group)
 banh_sprite = pygame.sprite.GroupSingle()
 banh_sprite.add(banh)
 
