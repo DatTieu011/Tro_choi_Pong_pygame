@@ -1,27 +1,30 @@
 import pygame, sys, random
 
+#Khởi tạo lớp chắn bóng (khi bóng dội vào tường, vào vật thể)
 class Can(pygame.sprite.Sprite):
 	def __init__(self,path,x_vt,y_vt):
 		super().__init__()
 		self.image = pygame.image.load(path)
 		self.rect = self.image.get_rect(center = (x_vt,y_vt))
 
+#Khởi tạo lớp người chơi với lớp con chắn bóng ở trên
 class Ngchoi(Can):
 	def __init__(self,path,x_vt,y_vt,tocdo):
 		super().__init__(path,x_vt,y_vt)
 		self.tocdo = tocdo
 		self.dichuyen = 0
-
+	#Hàm thực hiện giới hạn màn hình, tránh việc bóng bị rơi ra khỏi màn hình
 	def screen_constrain(self):
 		if self.rect.top <= 0:
 			self.rect.top = 0
 		if self.rect.bottom >= screen_height:
 			self.rect.bottom = screen_height
-
+	#Hàm cập nhật việc di chuyển cho thanh đỡ
 	def update(self,banh_group):
 		self.rect.y += self.dichuyen
 		self.screen_constrain()
 
+#Khởi tạo lớp bóng với lớp con chắn bóng 
 class Banh(Can):
 	def __init__(self,path,x_vt,y_vt,tocdo_x,tocdo_y,Thanh):
 		super().__init__(path,x_vt,y_vt)
@@ -30,12 +33,13 @@ class Banh(Can):
 		self.Thanh = Thanh
 		self.active = False
 		self.score_time = 0
-
+	#Hàm cập nhật tốc độ banh và quán tính khi banh va chạm vào tường hoặc thanh đỡ
 	def update(self):
 		if self.active:
 			self.rect.x += self.tocdo_x
 			self.rect.y += self.tocdo_y
 			self.Vacham()
+		#Nếu bóng không thấy có sự va chạm thì khởi động lại bộ đếm thời gian	
 		else:
 			self.restart_counter()
 		
@@ -65,7 +69,7 @@ class Banh(Can):
 		self.score_time = pygame.time.get_ticks()
 		self.rect.center = (screen_width/2,screen_height/2)
 		pygame.mixer.Sound.play(score_sound)
-
+	#Thực hiện khởi động lại thời gian đếm ngược sau khi một bên đã có điểm
 	def restart_counter(self):
 		tg_hientai = pygame.time.get_ticks()
 		countdown_number = 3
@@ -84,6 +88,7 @@ class Banh(Can):
 		pygame.draw.rect(screen,bg_color,dem_tg_rect)
 		screen.blit(dem_tg,dem_tg_rect)
 
+#Lớp đối thủ với lớp con bên trong thực hiện hành động Cản của thanh đỡ
 class Doithu(Can):
 	def __init__(self,path,x_vt,y_vt,tocdo):
 		super().__init__(path,x_vt,y_vt)
@@ -117,7 +122,7 @@ class GameManager:
 		self.banh_group.update()
 		self.reset_banh()
 		self.ve_bang_diem()
-
+	#Thực hiện tạo lại bóng sau khi đã có một bên ghi bàn
 	def reset_banh(self):
 		if self.banh_group.sprite.rect.right >= screen_width:
 			self.doithu_score += 1
@@ -125,7 +130,7 @@ class GameManager:
 		if self.banh_group.sprite.rect.left <= 0:
 			self.ngchoi_score += 1
 			self.banh_group.sprite.reset_banh()
-
+	#Thực hiện phác thảo bản điểm trên giao diện chính của trò chơi
 	def ve_bang_diem(self):
 		ngchoi_score = basic_font.render(str(self.ngchoi_score),True,accent_color)
 		doithu_score = basic_font.render(str(self.doithu_score),True,accent_color)
@@ -136,7 +141,7 @@ class GameManager:
 		screen.blit(ngchoi_score,ngchoi_score_rect)
 		screen.blit(doithu_score,doithu_score_rect)
 
-# General setup
+#Cài đặt game
 pygame.mixer.pre_init(44100,-16,2,512)
 pygame.init()
 clock = pygame.time.Clock()
@@ -147,7 +152,7 @@ screen_height = 960
 screen = pygame.display.set_mode((screen_width,screen_height))
 pygame.display.set_caption('Pong')
 
-# Global Variables
+#Biến toàn cục
 bg_color = pygame.Color('#2F373F')
 accent_color = (27,35,43)
 basic_font = pygame.font.Font('freesansbold.ttf', 32)
@@ -155,22 +160,25 @@ plob_sound = pygame.mixer.Sound("bonk.ogg")
 score_sound = pygame.mixer.Sound("win.ogg")
 middle_strip = pygame.Rect(screen_width/2 - 2,0,4,screen_height)
 
-# Game objects
+#Các đối tượng trong game
 ngchoi = Ngchoi('Paddle.png',screen_width - 20,screen_height/2,5)
 doithu = Doithu('Paddle.png',20,screen_width/2,5)
 thanh_group = pygame.sprite.Group()
 thanh_group.add(ngchoi)
 thanh_group.add(doithu)
 
+#Chọn hoạt ảnh bóng 
 banh = Banh('Ball.png',screen_width/2,screen_height/2,4,4,thanh_group)
 banh_sprite = pygame.sprite.GroupSingle()
 banh_sprite.add(banh)
 
 game_manager = GameManager(banh_sprite,thanh_group)
 
+#Thực hiện chèn hình ảnh nền
 background_image = pygame.image.load("pong_table.jpg").convert()
 
 while True:
+	#Gán các phím và thực hiện lệnh tắt cửa sổ game khi click vào phím tắt X
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			pygame.quit()
@@ -188,13 +196,12 @@ while True:
 	
 
 	# Hình nền game
-	screen.fill(bg_color)
 	pygame.draw.rect(screen,accent_color,middle_strip)
 	screen.blit(background_image, [0, 0])
 
 	# Chạy game
 	game_manager.chay_game()
 
-	# Kết xuất đồ họa
+	# Kết xuất đồ họa và thiết lập tốc độ game 
 	pygame.display.flip()
 	clock.tick(120)
