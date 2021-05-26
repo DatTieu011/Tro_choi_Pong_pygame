@@ -183,6 +183,9 @@ while True:
 		if event.type == pygame.QUIT:
 			pygame.quit()
 			sys.exit()
+		if pygame.key.get_pressed()[pygame.K_q]:
+			pygame.quit()
+			sys.exit()
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_UP:
 				ngchoi.dichuyen -= ngchoi.tocdo
