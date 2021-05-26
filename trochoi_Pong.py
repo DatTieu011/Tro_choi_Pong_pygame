@@ -42,12 +42,12 @@ class Banh(Can):
 		#Nếu bóng không thấy có sự va chạm thì khởi động lại bộ đếm thời gian	
 		else:
 			self.restart_counter()
-		
+	#Hàm va chạm với âm thanh khi va chạm tường và va chạm thanh đỡ	
 	def Vacham(self):
 		if self.rect.top <= 0 or self.rect.bottom >= screen_height:
 			pygame.mixer.Sound.play(plob_sound)
 			self.tocdo_y *= -1
-
+		#Vòng lặp banh sẽ dội ra khi va chạm với thanh và tường
 		if pygame.sprite.spritecollide(self,self.Thanh,False):
 			pygame.mixer.Sound.play(plob_sound)
 			vacham_thanh = pygame.sprite.spritecollide(self,self.Thanh,False)[0].rect
@@ -61,7 +61,7 @@ class Banh(Can):
 			if abs(self.rect.bottom - vacham_thanh.top) < 10 and self.tocdo_y > 0:
 				self.rect.bottom = vacham_thanh.top
 				self.tocdo_y *= -1
-
+	#Cài đặt lại vị trí banh
 	def reset_banh(self):
 		self.active = False
 		self.tocdo_x *= random.choice((-1,1))
